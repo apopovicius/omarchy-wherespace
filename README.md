@@ -27,7 +27,8 @@ screen it lives on. Built for multi-monitor setups, and just as useful on one.
 - **Fits the bar.** On a narrow bar (a laptop, or next to a long window
   title) it steps down rather than running into the clock: one icon per
   workspace, then tighter spacing, then numbers only, and as a last resort
-  only the workspace you're on. The focused workspace always keeps its apps.
+  only the workspace you're on (with its first two apps and `+N`). Until
+  then, the focused workspace always shows all its apps.
 
 ## Follows your theme and font
 

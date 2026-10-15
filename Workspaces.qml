@@ -395,7 +395,9 @@ BarWidget {
         // The focused workspace is always fully open, so count all its apps.
         var focusedHere = Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === runs[r].ids[i]
         if (focusedOnlyLevel && !focusedHere) continue
-        var apps = appGroups(workspaceById(runs[r].ids[i]), focusedHere ? 999 : limit)
+        // The focused workspace shows all its apps, except in ultra narrow
+        // where it shows the first few and "+X".
+        var apps = appGroups(workspaceById(runs[r].ids[i]), focusedHere ? (focusedOnlyLevel ? root.maxApps : 999) : limit)
         var width = shapeWidth(runs[r].kind)
         var items = 1
         for (var a = 0; a < apps.apps.length; a++) {
@@ -791,13 +793,16 @@ BarWidget {
             required property int modelData
 
             readonly property var workspace: { root.revision; return root.workspaceById(modelData) }
-            readonly property var apps: { root.revision; return root.appGroups(workspace, root.appsLimit) }
+            readonly property var apps: {
+              root.revision
+              return root.appGroups(workspace, root.focusedOnly && focused ? root.maxApps : root.appsLimit)
+            }
             readonly property var screen: group.modelData
             readonly property bool focused: Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === modelData
             readonly property bool shown: workspace !== null && workspace.active
             readonly property color tint: root.bar ? root.bar.barForeground : Color.foreground
             // The focused workspace shows all its apps; others show the first few.
-            readonly property bool expanded: focused && pill.apps.hidden.length > 0
+            readonly property bool expanded: focused && !root.focusedOnly && pill.apps.hidden.length > 0
 
             bar: root.bar
             // Ultra narrow: only the focused workspace is shown.
