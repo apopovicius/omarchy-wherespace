@@ -40,22 +40,23 @@ fi
 fatal='\[(duplicate-property-binding|duplicated-name|read-only-property|syntax)\]'
 
 lint() {
-  local out status=0
-  out=$("$QMLLINT" "$1" 2>&1) || status=$?
-  if (( status != 0 && status != 255 )) && ! grep -qE "$fatal" <<<"$out"; then
-    status=0
-  fi
-  if (( status == 255 )) || grep -qE "$fatal" <<<"$out"; then
-    grep -E "$fatal|[Ee]rror" <<<"$out" | head -20 >&2
+  # Exit codes differ between Qt versions (some fail on any warning), so only
+  # the categories above decide.
+  local out
+  out=$("$QMLLINT" "$1" 2>&1) || true
+  if grep -qE "$fatal" <<<"$out"; then
+    grep -E "$fatal" <<<"$out" | head -20 >&2
     return 1
   fi
 }
 
-# The linter must catch a known-bad file, or a silently broken setup would
+# The linter must catch known-bad files, or a silently broken setup would
 # pass everything.
-if lint scripts/fixtures/duplicate-binding.qml 2>/dev/null; then
-  fail "qmllint did not flag scripts/fixtures/duplicate-binding.qml; is it Qt 6?"
-fi
+for fixture in scripts/fixtures/*.qml; do
+  if lint "$fixture" 2>/dev/null; then
+    fail "qmllint did not flag $fixture; is it a recent Qt 6?"
+  fi
+done
 
 for file in *.qml; do
   lint "$file" || fail "QML lint failed in $file"

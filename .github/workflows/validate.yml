@@ -9,13 +9,17 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  check:
+    # Arch Linux, like Omarchy: the same current Qt 6 users run.
     runs-on: ubuntu-latest
+    container: archlinux:latest
     steps:
+      - name: Install tools
+        run: pacman -Syu --noconfirm --needed git jq python qt6-declarative
+
       - uses: actions/checkout@v5
 
-      - name: Install Qt 6 tools (qmllint)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq qt6-declarative-dev-tools
-
       - name: Pre-release checks
-        run: scripts/check.sh
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          scripts/check.sh
