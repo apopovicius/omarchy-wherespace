@@ -3,8 +3,8 @@ import QtQuick.Effects
 import qs.Commons
 
 // One app on a workspace: its icon (or, for a bare terminal, a console glyph),
-// with a window-count bubble at the bottom-right when it has 2+ windows. The
-// bubble sticks out past the icon, and the item is that much wider.
+// with a window-count bubble beside it when it has 2+ windows; the item is
+// that much wider.
 Item {
   id: appSlot
 
@@ -12,6 +12,8 @@ Item {
   property var app: ({ icon: "", glyph: "", text: "", name: "", count: 1 })
   property color tint: "white"
   property color screenColor: "white"
+  // Count bubble styled like the screens: outlined, filled only when focused.
+  property bool focused: false
   property real artOpacity: 1
 
   readonly property string fontFamily: host && host.bar ? host.bar.fontFamily : Style.font.family
@@ -92,19 +94,19 @@ Item {
   Rectangle {
     visible: appSlot.app.count >= 2
     z: 2
-    x: appSlot.iconWidth + appSlot.host.bubbleOverhang(appSlot.app.count) - width
-    y: parent.height - height + Math.round(appSlot.host.line * 3)
+    x: appSlot.iconWidth + appSlot.host.bubbleGap
+    anchors.verticalCenter: parent.verticalCenter
     width: appSlot.host.bubbleWidth(appSlot.app.count)
     height: appSlot.host.bubbleHeight
     radius: height / 2
-    color: appSlot.screenColor
-    border.width: 1
-    border.color: appSlot.host.bar ? appSlot.host.bar.background : Color.background
+    color: appSlot.focused ? appSlot.screenColor : "transparent"
+    border.width: appSlot.host.line
+    border.color: appSlot.tint
 
     Text {
       anchors.centerIn: parent
       text: appSlot.host.bubbleText(appSlot.app.count)
-      color: appSlot.host.contrastOn(appSlot.screenColor)
+      color: appSlot.focused ? appSlot.host.contrastOn(appSlot.screenColor) : appSlot.tint
       font.family: appSlot.fontFamily
       font.pixelSize: appSlot.host.bubbleFont
       font.bold: true

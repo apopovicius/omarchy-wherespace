@@ -16,8 +16,8 @@ switching, what is on each workspace and which screen it lives on.
   workspace shows all of its apps. Icons follow the window layout: one from
   each side of the main split in turn (left, right, left, right …), so with a
   left/right split the two icons are the two halves.
-- **Grouped windows.** Several windows of one app share an icon with a count
-  bubble. Bare terminals show a console glyph; Chromium web apps show their
+- **Grouped windows.** Several windows of one app share an icon, with a count
+  beside it. Bare terminals show a console glyph; Chromium web apps show their
   own icon.
 - **Click to jump.** Click a workspace to switch to it, or click an app icon
   to focus that app.
@@ -53,6 +53,9 @@ with its screen's color.
 Right-click the workspaces to pick each screen's shape and color:
 
 ![Settings](docs/screens/settings.png)
+
+See how wherespace has changed from release to release in
+[its screenshot history](docs/history/README.md).
 
 ## Settings
 

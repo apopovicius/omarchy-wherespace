@@ -38,10 +38,12 @@ BarWidget {
     return Math.max(root.bubbleHeight, Math.ceil(countMetrics.advanceWidth(bubbleText(count))) + 5)
   }
 
-  // How far the bubble sticks out past the icon's right edge; the pill grows
-  // by this much so the bubble never runs into the next item.
+  // The bubble sits beside the icon (never over it); the pill grows by the
+  // bubble plus a small gap.
+  readonly property real bubbleGap: Math.max(2, Math.round(line * 2))
+
   function bubbleOverhang(count) {
-    return count >= 2 ? Math.round(bubbleWidth(count) * 0.7) : 0
+    return count >= 2 ? bubbleGap + bubbleWidth(count) : 0
   }
   // Same space on both sides of the box as between its two halves.
   readonly property real pillPadding: Style.spaceReal(4)
@@ -834,6 +836,7 @@ BarWidget {
                   app: modelData
                   tint: pill.tint
                   screenColor: pill.screen.color
+                  focused: pill.focused
                   artOpacity: pill.artOpacity
                   onActivated: root.focusApp(modelData)
                 }
@@ -866,6 +869,7 @@ BarWidget {
                       app: modelData
                       tint: pill.tint
                       screenColor: pill.screen.color
+                      focused: pill.focused
                       artOpacity: pill.artOpacity
                       onActivated: root.focusApp(modelData)
                     }
