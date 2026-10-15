@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "io.github.apopovicius.wherespace",
-  "name": "Wherespace",
+  "name": "wherespace",
   "version": "1.0.2",
   "author": "Andrei Popovici",
   "description": "Know where every app is: each workspace drawn as the screen it lives on, with its apps in window-layout order.",
@@ -12,7 +12,7 @@
     "barWidget": "Workspaces.qml"
   },
   "barWidget": {
-    "displayName": "Wherespace",
+    "displayName": "wherespace",
     "description": "Workspaces drawn as their screen, with their apps",
     "category": "Compositor",
     "defaultSection": "left",

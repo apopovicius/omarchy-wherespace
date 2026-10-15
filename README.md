@@ -1,9 +1,9 @@
-# Wherespace
+# wherespace
 
 Know where every app is. An Omarchy bar widget that shows, without
 switching, what is on each workspace and which screen it lives on.
 
-![Wherespace in the bar](preview.png)
+![wherespace in the bar](preview.png)
 
 - **Number order.** Workspaces stay in order: 1, 2, 3 … 0. Empty ones are hidden.
 - **Drawn as their screen.** Each number sits inside a small drawing of the
@@ -28,7 +28,7 @@ switching, what is on each workspace and which screen it lives on.
 
 ## Follows your theme and font
 
-Wherespace has no colors or fonts of its own; everything comes from your
+wherespace has no colors or fonts of its own; everything comes from your
 Omarchy setup and updates live:
 
 - **Screen colors** are named colors from the active theme's `colors.toml`
