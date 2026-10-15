@@ -1,7 +1,8 @@
 # wherespace
 
-Know where every app is. An Omarchy bar widget that shows, without
-switching, what is on each workspace and which screen it lives on.
+Know where every app is. wherespace replaces the workspace numbers in the
+Omarchy bar: it shows, without switching, what is on each workspace and which
+screen it lives on. Built for multi-monitor setups, and just as useful on one.
 
 ![wherespace in the bar](preview.png)
 
@@ -16,8 +17,8 @@ switching, what is on each workspace and which screen it lives on.
   workspace shows all of its apps. Icons follow the window layout: one from
   each side of the main split in turn (left, right, left, right …), so with a
   left/right split the two icons are the two halves.
-- **Grouped windows.** Several windows of one app share an icon, with a count
-  beside it. Bare terminals show a console glyph; Chromium web apps show their
+- **Grouped windows.** Several windows of one app share an icon, with a small
+  count beside it (`×5`). Bare terminals show a console glyph; Chromium web apps show their
   own icon.
 - **Click to jump.** Click a workspace to switch to it, or click an app icon
   to focus that app.

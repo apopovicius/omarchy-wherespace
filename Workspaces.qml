@@ -27,20 +27,21 @@ BarWidget {
   // App icons match the bar's other icons (tray, menu): the bar icon size.
   readonly property int appIconSize: Style.bar.iconFont
   // Window-count bubble at an app icon's bottom-right.
-  readonly property int bubbleFont: Math.round(Style.font.caption * 0.85)
-  readonly property int bubbleHeight: bubbleFont + 4
+  // Kept smaller than the app icon so it reads as a badge, not a second icon.
+  readonly property int bubbleFont: Math.max(7, Math.round(Style.font.caption * 0.7))
+  readonly property int bubbleHeight: bubbleFont + 3
 
   function bubbleText(count) {
-    return count > 99 ? "99+" : String(count)
+    return "\u00d7" + (count > 99 ? "99+" : String(count))
   }
 
   function bubbleWidth(count) {
-    return Math.max(root.bubbleHeight, Math.ceil(countMetrics.advanceWidth(bubbleText(count))) + 5)
+    return Math.ceil(countMetrics.advanceWidth(bubbleText(count)))
   }
 
   // The bubble sits beside the icon (never over it); the pill grows by the
   // bubble plus a small gap.
-  readonly property real bubbleGap: Math.max(2, Math.round(line * 2))
+  readonly property real bubbleGap: Math.max(1, Math.round(line))
 
   function bubbleOverhang(count) {
     return count >= 2 ? bubbleGap + bubbleWidth(count) : 0

@@ -3,8 +3,8 @@ import QtQuick.Effects
 import qs.Commons
 
 // One app on a workspace: its icon (or, for a bare terminal, a console glyph),
-// with a window-count bubble beside it when it has 2+ windows; the item is
-// that much wider.
+// with its window count ("×5") beside it when it has 2+ windows; the item
+// is that much wider.
 Item {
   id: appSlot
 
@@ -91,26 +91,15 @@ Item {
     renderType: Text.NativeRendering
   }
 
-  Rectangle {
+  // Window count as plain text ("×5") beside the icon, low like a subscript.
+  Text {
     visible: appSlot.app.count >= 2
-    z: 2
     x: appSlot.iconWidth + appSlot.host.bubbleGap
-    anchors.verticalCenter: parent.verticalCenter
-    width: appSlot.host.bubbleWidth(appSlot.app.count)
-    height: appSlot.host.bubbleHeight
-    radius: height / 2
-    color: appSlot.focused ? appSlot.screenColor : "transparent"
-    border.width: appSlot.host.line
-    border.color: appSlot.tint
-
-    Text {
-      anchors.centerIn: parent
-      text: appSlot.host.bubbleText(appSlot.app.count)
-      color: appSlot.focused ? appSlot.host.contrastOn(appSlot.screenColor) : appSlot.tint
-      font.family: appSlot.fontFamily
-      font.pixelSize: appSlot.host.bubbleFont
-      font.bold: true
-      renderType: Text.NativeRendering
-    }
+    y: parent.height - height + Math.round(appSlot.host.line * 2)
+    text: appSlot.host.bubbleText(appSlot.app.count)
+    color: appSlot.tint
+    font.family: appSlot.fontFamily
+    font.pixelSize: appSlot.host.bubbleFont
+    renderType: Text.NativeRendering
   }
 }

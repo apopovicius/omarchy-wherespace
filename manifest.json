@@ -4,7 +4,7 @@
   "name": "wherespace",
   "version": "1.0.7",
   "author": "Andrei Popovici",
-  "description": "Know where every app is: each workspace drawn as the screen it lives on, with its apps in window-layout order.",
+  "description": "Replaces the bar's workspace numbers: each workspace is drawn as the screen it lives on (laptop, monitor, …), with the apps open on it. Built for multi-monitor setups.",
   "kinds": [
     "bar-widget"
   ],
@@ -13,7 +13,7 @@
   },
   "barWidget": {
     "displayName": "wherespace",
-    "description": "Workspaces drawn as their screen, with their apps",
+    "description": "Workspace indicators drawn as their screen, with their apps",
     "category": "Compositor",
     "defaultSection": "left",
     "allowMultiple": false
