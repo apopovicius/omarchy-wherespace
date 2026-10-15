@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.apopovicius.screen-workspaces",
+  "name": "Screen Workspaces",
+  "version": "1.0.0",
+  "author": "Andrei Popovici",
+  "description": "Workspaces drawn as the screen they live on (laptop, monitor, …) in a per-screen theme color, with their apps ordered by the window layout.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Workspaces.qml"
+  },
+  "barWidget": {
+    "displayName": "Screen Workspaces",
+    "description": "Workspaces drawn as their screen, with their apps",
+    "category": "Compositor",
+    "defaultSection": "left",
+    "allowMultiple": false
+  }
+}
