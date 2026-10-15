@@ -114,12 +114,13 @@ BarWidget {
   readonly property string terminalGlyph: "\uDB80\uDD8D"
 
   // When the bar is too narrow (e.g. a laptop), step down until the widget
-  // fits before the centered widgets: 2 icons, 1 icon, numbers only (no
-  // icons, no "+N"), then numbers only with tight spacing. The focused
-  // workspace keeps its apps throughout.
+  // fits before the centered widgets: 2 icons, 1 icon, 1 icon with tight
+  // spacing, numbers only (no icons, no "+N"), then numbers only with tight
+  // spacing. The focused workspace keeps its apps throughout.
   readonly property var fitLevels: [
     { apps: maxApps, tight: false },
     { apps: 1, tight: false },
+    { apps: 1, tight: true },
     { apps: 0, tight: false },
     { apps: 0, tight: true }
   ]

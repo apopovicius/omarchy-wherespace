@@ -26,7 +26,7 @@ screen it lives on. Built for multi-monitor setups, and just as useful on one.
   and every window's icon, app name and title.
 - **Fits the bar.** On a narrow bar (a laptop, or next to a long window
   title) it steps down rather than running into the clock: one icon per
-  workspace, then numbers only, then tighter spacing. The focused workspace
+  workspace, then tighter spacing, then numbers only. The focused workspace
   always keeps its apps.
 
 ## Follows your theme and font
