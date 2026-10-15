@@ -9,6 +9,8 @@ Item {
   // monitor | laptop | ultrawide | portrait | tv
   property string kind: "monitor"
   property color color: "white"
+  // Outline, foot and deck. Defaults to the screen color.
+  property color borderColor: color
   property bool filled: false
   property string label: ""
   property color labelColor: color
@@ -43,10 +45,10 @@ Item {
     width: shape.screenWidth
     height: shape.screenHeight
     radius: shape.line * 2
-    // A light wash of the screen's color inside; solid when focused.
-    color: shape.filled ? shape.color : Qt.rgba(shape.color.r, shape.color.g, shape.color.b, 0.15)
+    // Filled with the screen's color only when focused; otherwise just the outline.
+    color: shape.filled ? shape.color : "transparent"
     border.width: shape.line
-    border.color: shape.color
+    border.color: shape.borderColor
     opacity: shape.artOpacity
   }
 
@@ -59,7 +61,7 @@ Item {
     width: shape.screenWidth * (shape.kind === "portrait" ? 0.7 : shape.kind === "ultrawide" ? 0.3 : 0.45)
     height: shape.line * 1.5
     radius: shape.line
-    color: shape.color
+    color: shape.borderColor
     opacity: shape.artOpacity
   }
 
@@ -73,7 +75,7 @@ Item {
     width: shape.deckWidth
     height: shape.line * 2
     radius: shape.line
-    color: shape.color
+    color: shape.borderColor
     opacity: shape.artOpacity
   }
 
@@ -88,7 +90,7 @@ Item {
       width: shape.line * 1.5
       height: shape.line * 2
       radius: shape.line / 2
-      color: shape.color
+      color: shape.borderColor
       opacity: shape.artOpacity
     }
   }

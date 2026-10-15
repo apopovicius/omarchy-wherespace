@@ -85,6 +85,7 @@ KeyboardPanel {
                 anchors.verticalCenter: parent.verticalCenter
                 kind: screenSection.modelData.kind
                 color: screenSection.modelData.color
+                borderColor: panel.textColor
                 filled: true
                 label: "1"
                 filledLabelColor: panel.host ? panel.host.contrastOn(screenSection.modelData.color) : "white"

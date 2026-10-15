@@ -77,6 +77,7 @@ PopupWindow {
           anchors.verticalCenter: parent.verticalCenter
           kind: card.screenInfo ? card.screenInfo.kind : "monitor"
           color: card.screenInfo ? card.screenInfo.color : Color.accent
+          borderColor: card.textColor
           filled: true
           label: card.pill ? (card.pill.modelData === 10 ? "0" : String(card.pill.modelData)) : ""
           filledLabelColor: card.host && card.screenInfo ? card.host.contrastOn(card.screenInfo.color) : "white"

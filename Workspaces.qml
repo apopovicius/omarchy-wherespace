@@ -809,6 +809,8 @@ BarWidget {
                 anchors.verticalCenter: parent.verticalCenter
                 kind: group.modelData.kind
                 color: group.modelData.color
+                // Outline in the bar's text color, filled with the screen's color.
+                borderColor: pill.tint
                 filled: pill.focused
                 label: pill.modelData === 10 ? "0" : String(pill.modelData)
                 // Same color as the bar's window title text.

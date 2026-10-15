@@ -6,12 +6,12 @@ switching, what is on each workspace and which screen it lives on.
 ![wherespace in the bar](preview.png)
 
 - **Number order.** Workspaces stay in order: 1, 2, 3 … 0. Empty ones are hidden.
-- **Drawn as their screen.** Each number sits inside a small drawing of the
+- **Drawn as their screen.** Each number sits inside a small outline of the
   screen the workspace is on: a monitor, a laptop, an ultrawide, a portrait
-  monitor or a TV. The focused workspace is filled; the others' numbers are
-  greyed out.
-- **A color per screen.** Each screen gets its own color from your theme, so
-  you can tell your laptop from your monitor at a glance.
+  monitor or a TV, drawn in the bar's own text color.
+- **A color per screen.** The focused workspace is filled with its screen's
+  color, picked from your theme, so you see at a glance which screen you're
+  on.
 - **What's on it.** Up to two app icons per workspace, then `+N`. The focused
   workspace shows all of its apps. Icons follow the window layout: one from
   each side of the main split in turn (left, right, left, right …), so with a
@@ -31,8 +31,9 @@ switching, what is on each workspace and which screen it lives on.
 wherespace has no colors or fonts of its own; everything comes from your
 Omarchy setup and updates live:
 
-- **Screen colors** are named colors from the active theme's `colors.toml`
-  (`green`, `blue`, `magenta`, …), re-read on every theme switch.
+- **Screen outlines** use the bar's text color; the focused screen's **fill**
+  is a named color from the active theme's `colors.toml` (`green`, `blue`,
+  `magenta`, …), re-read on every theme switch.
 - **Numbers, counts and glyphs** use the bar's text color, like the window
   title. With the transparent bar, that's the color Omarchy picks for your
   wallpaper.
@@ -43,8 +44,9 @@ Omarchy setup and updates live:
 
 ## Screenshots
 
-The bar: each workspace is drawn as its screen (monitors in blue, the laptop
-in red), with its apps next to it. The focused workspace is filled.
+The bar: each workspace is drawn as the outline of its screen (the wide deck
+marks the laptop), with its apps next to it. The focused workspace is filled
+with its screen's color.
 
 ![The bar](docs/screens/bar.png)
 
