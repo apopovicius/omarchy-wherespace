@@ -47,7 +47,10 @@ BarWidget {
     return count >= 2 ? bubbleGap + bubbleWidth(count) : 0
   }
   // Same space on both sides of the box as between its two halves.
-  readonly property real pillPadding: Style.spaceReal(4)
+  readonly property real normalPadding: Style.spaceReal(4)
+  readonly property real tightPadding: Style.spaceReal(2)
+  readonly property real pillPadding: tight ? tightPadding : normalPadding
+  readonly property real pillSpacing: tight ? Style.space(1) : Style.space(4)
   // Box padding above and below the screen. The foot/deck sits inside the
   // bottom padding, so the box is symmetric around the screen, which is what
   // lines up with the rest of the bar.
@@ -110,17 +113,26 @@ BarWidget {
   readonly property var terminalClasses: ["foot", "footclient", "Alacritty", "kitty", "com.mitchellh.ghostty", "org.wezfurlong.wezterm"]
   readonly property string terminalGlyph: "\uDB80\uDD8D"
 
-  // When the bar is too narrow (e.g. a laptop), show fewer resting app icons
-  // (2, then 1, then none) so the widget never runs into the centered widgets.
-  readonly property var appLimits: [maxApps, 1, 0]
+  // When the bar is too narrow (e.g. a laptop), step down until the widget
+  // fits before the centered widgets: 2 icons, 1 icon, numbers only (no
+  // icons, no "+N"), then numbers only with tight spacing. The focused
+  // workspace keeps its apps throughout.
+  readonly property var fitLevels: [
+    { apps: maxApps, tight: false },
+    { apps: 1, tight: false },
+    { apps: 0, tight: false },
+    { apps: 0, tight: true }
+  ]
   property real availableWidth: Infinity
-  readonly property int appsLimit: {
+  readonly property var fitLevel: {
     root.revision
-    for (var level = 0; level < appLimits.length; level++) {
-      if (requiredWidth(appLimits[level]) <= availableWidth) return appLimits[level]
+    for (var i = 0; i < fitLevels.length; i++) {
+      if (requiredWidth(fitLevels[i].apps, fitLevels[i].tight) <= availableWidth) return fitLevels[i]
     }
-    return 0
+    return fitLevels[fitLevels.length - 1]
   }
+  readonly property int appsLimit: fitLevel.apps
+  readonly property bool tight: fitLevel.tight
 
   // The pill under the pointer, and whether its hover card is showing.
   property var hoverPill: null
@@ -367,7 +379,9 @@ BarWidget {
 
   // Width the widget needs when showing at most `limit` apps per workspace,
   // worked out from the data so it can be decided before anything is drawn.
-  function requiredWidth(limit) {
+  function requiredWidth(limit, tightLevel) {
+    var padding = tightLevel ? root.tightPadding : root.normalPadding
+    var spacing = tightLevel ? Style.space(1) : Style.space(4)
     var total = 0
     var pills = 0
     var runs = groups()
@@ -384,15 +398,36 @@ BarWidget {
           width += bubbleOverhang(app.count)
           items++
         }
-        if (apps.more > 0) {
+        // At the numbers-only levels "+N" is hidden too.
+        if (apps.more > 0 && (limit > 0 || focusedHere)) {
           width += countMetrics.advanceWidth("+" + apps.more)
           items++
         }
-        total += width + root.pillPadding * (items - 1) + root.pillPadding * 2
+        total += width + padding * (items - 1) + padding * 2
         pills++
       }
     }
-    return total + Style.space(4) * Math.max(0, pills - 1) + root.trailingGap
+    return total + spacing * Math.max(0, pills - 1) + root.trailingGap
+  }
+
+  // Visible bar widgets on this widget's own bar window with one of `ids`.
+  // The bar's moduleWidgets() lookup returns nothing to third-party plugins,
+  // so walk the window's items and match each widget's moduleName instead.
+  function barItemsNamed(window, ids) {
+    var found = []
+    var stack = [window.contentItem]
+    while (stack.length > 0) {
+      var item = stack.pop()
+      if (!item) continue
+      if (item !== root && item.moduleName !== undefined && ids.indexOf(item.moduleName) !== -1
+          && item.visible && item.width > 0) {
+        found.push(item)
+        continue
+      }
+      var kids = item.children || []
+      for (var i = 0; i < kids.length; i++) stack.push(kids[i])
+    }
+    return found
   }
 
   // Room between this widget's left edge and the first widget of the bar's
@@ -404,34 +439,22 @@ BarWidget {
       root.availableWidth = Infinity
       return
     }
+    var layout = root.bar.layoutConfig || {}
+    var ids = function(section) { return (layout[section] || []).map(function(entry) { return entry && entry.id }) }
+    var left = (layout.left || []).map(function(entry) { return entry && entry.id })
+    var followerIds = left.slice(left.indexOf(root.moduleName) + 1)
+
     var limit = window.width / 2
-    var center = (root.bar.layoutConfig && root.bar.layoutConfig.center) || []
-    for (var i = 0; i < center.length; i++) {
-      var id = center[i] && center[i].id
-      var widgets = id && root.bar.moduleWidgets ? (root.bar.moduleWidgets(id) || []) : []
-      for (var w = 0; w < widgets.length; w++) {
-        var widget = widgets[w]
-        if (!widget || !widget.visible || widget.width <= 0 || widget.QsWindow.window !== window) continue
-        limit = Math.min(limit, widget.mapToItem(null, 0, 0).x)
-      }
-    }
-    // Widgets placed after this one in the left section (e.g. the window
-    // title) share the same room.
+    var centerItems = barItemsNamed(window, ids("center"))
+    for (var c = 0; c < centerItems.length; c++) limit = Math.min(limit, centerItems[c].mapToItem(null, 0, 0).x)
+
     var followers = 0
-    var left = (root.bar.layoutConfig && root.bar.layoutConfig.left) || []
-    var after = false
-    for (var l = 0; l < left.length; l++) {
-      var leftId = left[l] && left[l].id
-      if (leftId === root.moduleName) { after = true; continue }
-      if (!after || !leftId || !root.bar.moduleWidgets) continue
-      var items = root.bar.moduleWidgets(leftId) || []
-      for (var k = 0; k < items.length; k++) {
-        var item = items[k]
-        if (item && item.visible && item.QsWindow.window === window) followers += item.width + Style.space(8)
-      }
-    }
+    var followerItems = left.indexOf(root.moduleName) === -1 ? [] : barItemsNamed(window, followerIds)
+    for (var f = 0; f < followerItems.length; f++) followers += followerItems[f].width + Style.space(8)
+
     root.availableWidth = limit - root.mapToItem(null, 0, 0).x - followers - Style.space(16)
   }
+
 
   function setHover(pill, hovered) {
     if (hovered) {
@@ -737,8 +760,8 @@ BarWidget {
     flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
     rows: root.vertical ? -1 : 1
     columns: root.vertical ? 1 : -1
-    columnSpacing: Style.space(4)
-    rowSpacing: Style.space(4)
+    columnSpacing: root.pillSpacing
+    rowSpacing: root.pillSpacing
 
     Repeater {
       model: root.groups()
@@ -751,8 +774,8 @@ BarWidget {
         flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
         rows: root.vertical ? -1 : 1
         columns: root.vertical ? 1 : -1
-        columnSpacing: Style.space(4)
-        rowSpacing: Style.space(4)
+        columnSpacing: root.pillSpacing
+        rowSpacing: root.pillSpacing
 
         Repeater {
           model: group.modelData.ids
@@ -883,7 +906,7 @@ BarWidget {
                 visible: width > 0.5
                 anchors.top: parent.top
                 anchors.topMargin: Math.round((root.appSize - height) / 2)
-                implicitWidth: pill.apps.more > 0 && !pill.expanded ? moreText.implicitWidth : 0
+                implicitWidth: pill.apps.more > 0 && !pill.expanded && (root.appsLimit > 0 || pill.focused) ? moreText.implicitWidth : 0
                 width: Math.round(implicitWidth)
                 height: moreText.implicitHeight
                 clip: true
