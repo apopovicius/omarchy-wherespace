@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Snapshots the current screenshots into docs/history/<version>/ and rebuilds
-# the docs/history/README.md gallery (newest first), so every release keeps
-# a record of how wherespace looked.
+# Snapshots the staged screenshots (preview.png + docs/screens/) into
+# docs/history/<version>/, refreshes docs/history/latest/ as a copy of it (the
+# README links there, so it never needs editing per release), and rebuilds the
+# docs/history/README.md gallery, newest first. A copy, not a symlink:
+# symlinks are not allowed inside a plugin.
 #
 # Usage: scripts/snapshot-screens.sh vX.Y.Z   snapshot, then rebuild the gallery
 #        scripts/snapshot-screens.sh --gallery  only rebuild the gallery
@@ -17,6 +19,8 @@ if [[ $version != --gallery ]]; then
   for shot in docs/screens/*.png; do
     [[ -e $shot ]] && cp "$shot" "$dir/"
   done
+  rm -rf docs/history/latest
+  cp -r "$dir" docs/history/latest
 fi
 
 {

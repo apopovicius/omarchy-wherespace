@@ -49,11 +49,11 @@ The bar: each workspace is drawn as the outline of its screen (the wide deck
 marks the laptop), with its apps next to it. The focused workspace is filled
 with its screen's color.
 
-![The bar](docs/screens/bar.png)
+![The bar](docs/history/latest/bar.png)
 
 Right-click the workspaces to pick each screen's shape and color:
 
-![Settings](docs/screens/settings.png)
+![Settings](docs/history/latest/settings.png)
 
 See how wherespace has changed from release to release in
 [its screenshot history](docs/history/README.md).
