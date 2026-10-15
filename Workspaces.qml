@@ -115,25 +115,29 @@ BarWidget {
 
   // When the bar is too narrow (e.g. a laptop), step down until the widget
   // fits before the centered widgets: 2 icons, 1 icon, 1 icon with tight
-  // spacing, numbers only (no icons, no "+N"), then numbers only with tight
-  // spacing. The focused workspace keeps its apps throughout.
+  // spacing, numbers only (no icons, no "+N"), numbers only with tight
+  // spacing, then only the focused workspace. The focused workspace keeps its
+  // apps throughout.
   readonly property var fitLevels: [
     { apps: maxApps, tight: false },
     { apps: 1, tight: false },
     { apps: 1, tight: true },
     { apps: 0, tight: false },
-    { apps: 0, tight: true }
+    { apps: 0, tight: true },
+    // Ultra narrow, the last resort: only the focused workspace is shown.
+    { apps: 0, tight: true, focusedOnly: true }
   ]
   property real availableWidth: Infinity
   readonly property var fitLevel: {
     root.revision
     for (var i = 0; i < fitLevels.length; i++) {
-      if (requiredWidth(fitLevels[i].apps, fitLevels[i].tight) <= availableWidth) return fitLevels[i]
+      if (requiredWidth(fitLevels[i].apps, fitLevels[i].tight, fitLevels[i].focusedOnly === true) <= availableWidth) return fitLevels[i]
     }
     return fitLevels[fitLevels.length - 1]
   }
   readonly property int appsLimit: fitLevel.apps
   readonly property bool tight: fitLevel.tight
+  readonly property bool focusedOnly: fitLevel.focusedOnly === true
 
   // The pill under the pointer, and whether its hover card is showing.
   property var hoverPill: null
@@ -380,7 +384,7 @@ BarWidget {
 
   // Width the widget needs when showing at most `limit` apps per workspace,
   // worked out from the data so it can be decided before anything is drawn.
-  function requiredWidth(limit, tightLevel) {
+  function requiredWidth(limit, tightLevel, focusedOnlyLevel) {
     var padding = tightLevel ? root.tightPadding : root.normalPadding
     var spacing = tightLevel ? Style.space(1) : Style.space(4)
     var total = 0
@@ -390,6 +394,7 @@ BarWidget {
       for (var i = 0; i < runs[r].ids.length; i++) {
         // The focused workspace is always fully open, so count all its apps.
         var focusedHere = Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === runs[r].ids[i]
+        if (focusedOnlyLevel && !focusedHere) continue
         var apps = appGroups(workspaceById(runs[r].ids[i]), focusedHere ? 999 : limit)
         var width = shapeWidth(runs[r].kind)
         var items = 1
@@ -795,6 +800,8 @@ BarWidget {
             readonly property bool expanded: focused && pill.apps.hidden.length > 0
 
             bar: root.bar
+            // Ultra narrow: only the focused workspace is shown.
+            visible: !root.focusedOnly || focused
             hasVisualContent: true
             labelVisible: false
             // The hover card replaces the bar's plain-text tooltip.

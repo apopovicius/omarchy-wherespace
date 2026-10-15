@@ -17,7 +17,11 @@ Item {
   property real artOpacity: 1
 
   readonly property string fontFamily: host && host.bar ? host.bar.fontFamily : Style.font.family
-  readonly property real iconWidth: app.icon !== "" || appGlyph.visible ? host.appIconSize : appText.implicitWidth
+  // Decided from the app data, not from what is visible: inside a hidden
+  // reveal nothing is visible yet, which would make the icon zero-wide and
+  // keep the reveal hidden.
+  readonly property bool hasIcon: app.icon !== "" || (app.glyph || "") !== ""
+  readonly property real iconWidth: hasIcon ? host.appIconSize : appText.implicitWidth
 
   signal activated()
 
