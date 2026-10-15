@@ -54,6 +54,10 @@ with its screen's color.
 
 ![The bar](docs/history/latest/bar.png)
 
+With app icons hidden in the settings, only the screens remain:
+
+![Screens only](docs/history/latest/bar-screens-only.png)
+
 Rest the pointer on a workspace to see everything on it:
 
 ![Hover card](docs/history/latest/hover.png)
