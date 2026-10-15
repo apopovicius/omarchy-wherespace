@@ -2,6 +2,12 @@
 
 Screenshots captured for each release, newest first.
 
+## v1.1.2
+
+![v1.1.2](v1.1.2/preview.png)
+
+<img src="v1.1.2/settings.png" alt="v1.1.2 settings" width="280">
+
 ## v1.1.1
 
 ![v1.1.1](v1.1.1/preview.png)
