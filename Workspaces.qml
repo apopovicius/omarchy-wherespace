@@ -13,7 +13,7 @@ import qs.Ui
 // Right-click opens a popup to pick each screen's shape and color.
 BarWidget {
   id: root
-  moduleName: "io.github.apopovicius.screen-workspaces"
+  moduleName: "io.github.apopovicius.wherespace"
 
   // Sizes follow the bar's own icon tokens so everything matches the other
   // bar icons: the screen drawing (foot or deck included) fills the bar's icon
@@ -630,7 +630,7 @@ BarWidget {
 
   FileView {
     id: openedAtFile
-    path: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/omarchy-screen-workspaces-opened.json"
+    path: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/omarchy-wherespace-opened.json"
     printErrors: false
     onLoaded: {
       try { root.openedAt = JSON.parse(text()) || {} } catch (e) { root.openedAt = {} }

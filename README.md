@@ -1,9 +1,9 @@
-# Screen Workspaces
+# Wherespace
 
-An Omarchy bar widget that shows, without switching, what is on each
-workspace and which screen it lives on.
+Know where every app is. An Omarchy bar widget that shows, without
+switching, what is on each workspace and which screen it lives on.
 
-![Screen Workspaces in the bar](preview.png)
+![Wherespace in the bar](preview.png)
 
 - **Number order.** Workspaces stay in order: 1, 2, 3 … 0. Empty ones are hidden.
 - **Drawn as their screen.** Each number sits inside a small drawing of the
@@ -36,7 +36,7 @@ survive changing ports, in this widget's entry in
 
 ```json
 {
-  "id": "io.github.apopovicius.screen-workspaces",
+  "id": "io.github.apopovicius.wherespace",
   "screens": {
     "built-in": { "shape": "laptop", "color": "green" },
     "DELL P2725D": { "shape": "monitor", "color": "blue" }
@@ -50,16 +50,16 @@ Colors can be theme color names (`green`, `blue`, `magenta`, `cyan`,
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/apopovicius/omarchy-screen-workspaces
-omarchy plugin enable io.github.apopovicius.screen-workspaces --section left --after omarchy.workspaces
+omarchy plugin add https://github.com/apopovicius/omarchy-wherespace
+omarchy plugin enable io.github.apopovicius.wherespace --section left --after omarchy.workspaces
 omarchy plugin disable omarchy.workspaces
 ```
 
 ## Remove
 
 ```bash
-omarchy plugin enable omarchy.workspaces --section left --before io.github.apopovicius.screen-workspaces
-omarchy plugin remove io.github.apopovicius.screen-workspaces
+omarchy plugin enable omarchy.workspaces --section left --before io.github.apopovicius.wherespace
+omarchy plugin remove io.github.apopovicius.wherespace
 ```
 
 ## Requirements
