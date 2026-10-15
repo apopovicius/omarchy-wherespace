@@ -8,7 +8,7 @@ import qs.Ui
 
 // Workspaces in number order. Each pill shows the workspace number and the
 // apps on it: up to three app icons (repeats of one app grouped with a count),
-// where a terminal shows the program running in it (e.g. "herdr"). The number sits inside a small drawing of the screen the
+// where a terminal shows the program running in it (e.g. "nvim"). The number sits inside a small drawing of the screen the
 // workspace lives on: a monitor on its foot, or a laptop screen on its deck.
 // Right-click opens a popup to pick each screen's shape and color.
 BarWidget {
