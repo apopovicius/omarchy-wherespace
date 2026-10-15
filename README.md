@@ -51,6 +51,10 @@ with its screen's color.
 
 ![The bar](docs/history/latest/bar.png)
 
+Rest the pointer on a workspace to see everything on it:
+
+![Hover card](docs/history/latest/hover.png)
+
 Right-click the workspaces to pick each screen's shape and color:
 
 ![Settings](docs/history/latest/settings.png)
