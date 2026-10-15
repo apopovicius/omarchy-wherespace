@@ -23,9 +23,23 @@ switching, what is on each workspace and which screen it lives on.
   to focus that app.
 - **Hover for details.** Resting on a workspace shows a card with its screen
   and every window's icon, app name and title.
-- **Fits the bar.** Sizes come from the bar's own icon sizes and font. On a
-  narrow bar it shows fewer icons rather than running into the clock. Works
-  with theme switches and the transparent bar.
+- **Fits the bar.** On a narrow bar it shows fewer icons rather than running
+  into the clock.
+
+## Follows your theme and font
+
+Wherespace has no colors or fonts of its own; everything comes from your
+Omarchy setup and updates live:
+
+- **Screen colors** are named colors from the active theme's `colors.toml`
+  (`green`, `blue`, `magenta`, …), re-read on every theme switch.
+- **Numbers, counts and glyphs** use the bar's text color, like the window
+  title. With the transparent bar, that's the color Omarchy picks for your
+  wallpaper.
+- **The hover card and settings popup** use the theme's tooltip and popup
+  colors.
+- **Fonts** are the bar's and the shell's fonts; **sizes** follow Omarchy's
+  text size (`omarchy display text size`) and the bar's icon size.
 
 ## Screenshots
 
