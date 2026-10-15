@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import qs.Commons
 
 // One app on a workspace: its icon (or, for a bare terminal, a console glyph),
@@ -30,8 +31,11 @@ Item {
     onClicked: appSlot.activated()
   }
 
+  // Every icon is clipped to the same rounded shape, so full-bleed square
+  // icons (SoundCloud) carry the same visual weight as round ones.
   Image {
-    visible: appSlot.app.icon !== ""
+    id: iconImage
+    visible: false
     width: appSlot.host.appIconSize
     height: appSlot.host.appIconSize
     fillMode: Image.PreserveAspectFit
@@ -39,6 +43,24 @@ Item {
     sourceSize.height: Math.round(appSlot.host.appIconSize * Screen.devicePixelRatio)
     source: appSlot.app.icon
     smooth: true
+  }
+
+  Rectangle {
+    id: iconMask
+    visible: false
+    layer.enabled: true
+    width: appSlot.host.appIconSize
+    height: appSlot.host.appIconSize
+    radius: width * 0.3
+  }
+
+  MultiEffect {
+    visible: appSlot.app.icon !== ""
+    width: appSlot.host.appIconSize
+    height: appSlot.host.appIconSize
+    source: iconImage
+    maskEnabled: true
+    maskSource: iconMask
     opacity: appSlot.artOpacity
   }
 

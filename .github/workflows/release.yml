@@ -1,0 +1,56 @@
+name: Release
+
+# Push a tag that matches manifest.json's version (e.g. v1.0.1) to publish a
+# GitHub release with a plugin zip. Users installed with `omarchy plugin add`
+# get the new version through `omarchy plugin update`; the marketplace listing
+# moves to it once the release commit is submitted for verification (the
+# release notes link the form and carry the exact commit SHA it asks for).
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin and tag
+        run: scripts/validate.sh --tag "${GITHUB_REF_NAME}"
+
+      - name: Build plugin zip
+        run: |
+          id=$(jq -r .id manifest.json)
+          git archive --format=zip --prefix="${id}/" -o "wherespace-${GITHUB_REF_NAME}.zip" HEAD
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=$(jq -r .id manifest.json)
+          cat > notes.md <<EOF
+          ## Install
+
+          \`\`\`bash
+          omarchy plugin add https://github.com/${GITHUB_REPOSITORY}
+          \`\`\`
+
+          Already installed? \`omarchy plugin update ${id}\`
+
+          ## Marketplace update
+
+          Plugin ID: \`${id}\`
+          Commit: \`${GITHUB_SHA}\`
+
+          Submit this commit with the **Verify and publish a newer upstream commit**
+          option of the [plugin verification form](https://github.com/omacom/omarchy-plugin-marketplace/issues/new?template=verify-plugin.yml).
+          EOF
+          gh release create "${GITHUB_REF_NAME}" "wherespace-${GITHUB_REF_NAME}.zip" \
+            --title "Wherespace ${GITHUB_REF_NAME}" \
+            --notes-file notes.md \
+            --generate-notes \
+            --verify-tag

@@ -27,6 +27,17 @@ switching, what is on each workspace and which screen it lives on.
   narrow bar it shows fewer icons rather than running into the clock. Works
   with theme switches and the transparent bar.
 
+## Screenshots
+
+The bar: each workspace is drawn as its screen (monitors in blue, the laptop
+in pink), with its apps next to it. The focused workspace is filled.
+
+![The bar](docs/screens/bar.png)
+
+Right-click the workspaces to pick each screen's shape and color:
+
+![Settings](docs/screens/settings.png)
+
 ## Settings
 
 Right-click the workspaces to choose each screen's **shape** and **color**

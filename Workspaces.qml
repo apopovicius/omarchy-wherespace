@@ -24,7 +24,8 @@ BarWidget {
   // with it, so both halves of a pill carry the same visual weight.
   readonly property int appSize: Math.round(iconSize - line * 2.5)
   // App icons are drawn a bit larger than the screen and centered on it.
-  readonly property int appIconSize: Style.bar.iconCanvas
+  // App icons match the bar's other icons (tray, menu): the bar icon size.
+  readonly property int appIconSize: Style.bar.iconFont
   // Window-count bubble at an app icon's bottom-right.
   readonly property int bubbleFont: Math.round(Style.font.caption * 0.85)
   readonly property int bubbleHeight: bubbleFont + 4
