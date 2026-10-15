@@ -50,7 +50,7 @@ jobs:
           option of the [plugin verification form](https://github.com/omacom/omarchy-plugin-marketplace/issues/new?template=verify-plugin.yml).
           EOF
           gh release create "${GITHUB_REF_NAME}" "wherespace-${GITHUB_REF_NAME}.zip" \
-            --title "Wherespace ${GITHUB_REF_NAME}" \
+            --title "wherespace ${GITHUB_REF_NAME}" \
             --notes-file notes.md \
             --generate-notes \
             --verify-tag
