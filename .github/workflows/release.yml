@@ -1,37 +1,81 @@
 name: Release
 
-# Push a tag that matches manifest.json's version (e.g. v1.0.1) to publish a
-# GitHub release with a plugin zip. Users installed with `omarchy plugin add`
-# get the new version through `omarchy plugin update`; the marketplace listing
-# moves to it once the release commit is submitted for verification (the
-# release notes link the form and carry the exact commit SHA it asks for).
+# Run from the Actions tab ("Run workflow") or `gh workflow run release.yml`.
+# It bumps manifest.json's version (patch by default), commits and tags it,
+# builds a plugin zip and creates the GitHub release. Users who installed with
+# `omarchy plugin add` get it through `omarchy plugin update`; the marketplace
+# listing moves to it once the release commit is submitted for verification
+# (the release notes link the form and carry the commit SHA it asks for).
 
 on:
-  push:
-    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version part to bump
+        type: choice
+        options: [patch, minor, major]
+        default: patch
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
-      - name: Validate plugin and tag
-        run: scripts/validate.sh --tag "${GITHUB_REF_NAME}"
+      - name: Bump version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          current=$(jq -r .version manifest.json)
+          IFS=. read -r major minor patch <<<"${current%%[-+]*}"
+          case "$BUMP" in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            *) patch=$((patch + 1)) ;;
+          esac
+          next="${major}.${minor}.${patch}"
+          jq --arg v "$next" '.version = $v' manifest.json > manifest.tmp
+          mv manifest.tmp manifest.json
+          echo "Releasing ${current} -> ${next}"
+          echo "tag=v${next}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate plugin
+        run: scripts/validate.sh --tag "${{ steps.version.outputs.tag }}"
+
+      - name: Commit and tag
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: release ${TAG}"
+          git tag -a "${TAG}" -m "wherespace ${TAG}"
+          git push origin main "${TAG}"
 
       - name: Build plugin zip
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           id=$(jq -r .id manifest.json)
-          git archive --format=zip --prefix="${id}/" -o "wherespace-${GITHUB_REF_NAME}.zip" HEAD
+          git archive --format=zip --prefix="${id}/" -o "wherespace-${TAG}.zip" "${TAG}"
 
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           id=$(jq -r .id manifest.json)
+          sha=$(git rev-list -n 1 "${TAG}")
           cat > notes.md <<EOF
           ## Install
 
@@ -44,13 +88,13 @@ jobs:
           ## Marketplace update
 
           Plugin ID: \`${id}\`
-          Commit: \`${GITHUB_SHA}\`
+          Commit: \`${sha}\`
 
           Submit this commit with the **Verify and publish a newer upstream commit**
           option of the [plugin verification form](https://github.com/omacom/omarchy-plugin-marketplace/issues/new?template=verify-plugin.yml).
           EOF
-          gh release create "${GITHUB_REF_NAME}" "wherespace-${GITHUB_REF_NAME}.zip" \
-            --title "wherespace ${GITHUB_REF_NAME}" \
+          gh release create "${TAG}" "wherespace-${TAG}.zip" \
+            --title "wherespace ${TAG}" \
             --notes-file notes.md \
             --generate-notes \
             --verify-tag
