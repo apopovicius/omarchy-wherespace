@@ -20,8 +20,11 @@ Item {
   property real size: 20
   property real line: 1
 
-  readonly property var aspect: ({ monitor: 1.4, laptop: 1.3, ultrawide: 2.0, portrait: 0.72, tv: 1.55 })
-  readonly property real screenHeight: Math.round(size - line * (kind === "laptop" ? 4 : 2.5))
+  // Monitor and laptop share one screen frame so their numbers read the same;
+  // only what sits under the screen differs. Wider/taller kinds change the
+  // proportion on purpose.
+  readonly property var aspect: ({ monitor: 1.4, laptop: 1.4, ultrawide: 2.0, portrait: 0.72, tv: 1.55 })
+  readonly property real screenHeight: Math.round(size - line * 2.5)
   readonly property real screenWidth: Math.round(screenHeight * (aspect[kind] || aspect.monitor))
   readonly property real deckWidth: screenWidth + line * 6
 
@@ -40,7 +43,8 @@ Item {
     width: shape.screenWidth
     height: shape.screenHeight
     radius: shape.line * 2
-    color: shape.filled ? shape.color : "transparent"
+    // A light wash of the screen's color inside; solid when focused.
+    color: shape.filled ? shape.color : Qt.rgba(shape.color.r, shape.color.g, shape.color.b, 0.15)
     border.width: shape.line
     border.color: shape.color
     opacity: shape.artOpacity
@@ -59,14 +63,16 @@ Item {
     opacity: shape.artOpacity
   }
 
-  // Laptop: keyboard deck that sticks out on both sides.
+  // Laptop: keyboard deck that sticks out on both sides, in the same band
+  // under the screen as the monitor's foot.
   Rectangle {
     visible: shape.kind === "laptop"
     anchors.top: screenFrame.bottom
+    anchors.topMargin: Math.round(shape.line * 0.5)
     anchors.horizontalCenter: parent.horizontalCenter
     width: shape.deckWidth
-    height: shape.line * 3
-    radius: shape.line * 1.5
+    height: shape.line * 2
+    radius: shape.line
     color: shape.color
     opacity: shape.artOpacity
   }

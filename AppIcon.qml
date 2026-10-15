@@ -32,8 +32,8 @@ Item {
 
   Image {
     visible: appSlot.app.icon !== ""
-    width: appSlot.iconWidth
-    height: parent.height
+    width: appSlot.host.appIconSize
+    height: appSlot.host.appIconSize
     fillMode: Image.PreserveAspectFit
     sourceSize.width: Math.round(appSlot.host.appIconSize * Screen.devicePixelRatio)
     sourceSize.height: Math.round(appSlot.host.appIconSize * Screen.devicePixelRatio)
@@ -51,7 +51,8 @@ Item {
     color: appSlot.tint
     opacity: appSlot.artOpacity
     font.family: appSlot.fontFamily
-    font.pixelSize: Style.bar.iconFont
+    // Same scale as the image icons.
+    font.pixelSize: appSlot.host.appIconSize
     renderType: Text.NativeRendering
   }
 

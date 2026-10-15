@@ -355,8 +355,8 @@ BarWidget {
   }
 
   function shapeWidth(kind) {
-    var aspect = { monitor: 1.4, laptop: 1.3, ultrawide: 2.0, portrait: 0.72, tv: 1.55 }
-    var screenHeight = Math.round(root.iconSize - root.line * (kind === "laptop" ? 4 : 2.5))
+    var aspect = { monitor: 1.4, laptop: 1.4, ultrawide: 2.0, portrait: 0.72, tv: 1.55 }
+    var screenHeight = Math.round(root.iconSize - root.line * 2.5)
     var screenWidth = Math.round(screenHeight * (aspect[kind] || aspect.monitor))
     return kind === "laptop" ? screenWidth + root.line * 6 : screenWidth
   }
@@ -809,8 +809,8 @@ BarWidget {
                 color: group.modelData.color
                 filled: pill.focused
                 label: pill.modelData === 10 ? "0" : String(pill.modelData)
-                // Greyed out unless this is the focused workspace.
-                labelColor: Util.alpha(pill.tint, pill.focused ? 1 : 0.5)
+                // Same color as the bar's window title text.
+                labelColor: Util.alpha(pill.tint, 0.85)
                 filledLabelColor: root.contrastOn(group.modelData.color)
                 fontFamily: root.bar ? root.bar.fontFamily : Style.font.family
                 fontSize: Math.round(Style.font.caption * 0.85)
