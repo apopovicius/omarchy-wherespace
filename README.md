@@ -30,7 +30,7 @@ switching, what is on each workspace and which screen it lives on.
 ## Screenshots
 
 The bar: each workspace is drawn as its screen (monitors in blue, the laptop
-in pink), with its apps next to it. The focused workspace is filled.
+in red), with its apps next to it. The focused workspace is filled.
 
 ![The bar](docs/screens/bar.png)
 
