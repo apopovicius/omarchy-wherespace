@@ -105,3 +105,7 @@ cleared at logout.
 ## License
 
 MIT
+
+## Support
+
+If wherespace is useful to you, you can [buy me a coffee on Ko-fi](https://ko-fi.com/andreipopovici) ☕
