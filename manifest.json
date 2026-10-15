@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.apopovicius.wherespace",
   "name": "Wherespace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Andrei Popovici",
   "description": "Know where every app is: each workspace drawn as the screen it lives on, with its apps in window-layout order.",
   "kinds": [

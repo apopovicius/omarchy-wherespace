@@ -772,7 +772,8 @@ BarWidget {
             labelVisible: false
             // The hover card replaces the bar's plain-text tooltip.
             tooltipText: ""
-            Component.onDestruction: root.setHover(pill, false)
+            // The widget can be torn down before its pills (bar reload).
+            Component.onDestruction: if (root) root.setHover(pill, false)
 
             HoverHandler {
               onHoveredChanged: root.setHover(pill, hovered)
