@@ -104,8 +104,10 @@ cleared at logout.
 
 ## License
 
-MIT. wherespace started from Omarchy's built-in workspaces widget
-(MIT-licensed, © the Omarchy contributors) and has since been rewritten.
+MIT. wherespace started from the built-in workspaces widget of
+[Omarchy](https://github.com/basecamp/omarchy) (MIT, © David Heinemeier
+Hansson) and has since been rewritten; see [LICENSE](LICENSE) for both
+notices.
 
 ## Support
 
