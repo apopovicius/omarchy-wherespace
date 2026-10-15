@@ -97,6 +97,9 @@ omarchy plugin enable omarchy.workspaces --section left --before io.github.apopo
 omarchy plugin remove io.github.apopovicius.wherespace
 ```
 
+This brings back Omarchy's workspaces in the same spot. Your screen shape and
+color choices are removed with the plugin; nothing else is left behind.
+
 ## Requirements
 
 Omarchy Quattro (Hyprland + the Omarchy shell). The widget runs `hyprctl`,
