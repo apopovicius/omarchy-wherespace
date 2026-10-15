@@ -61,6 +61,56 @@ KeyboardPanel {
           }
         }
 
+        // App icons on or off for the whole widget.
+        Row {
+          spacing: Style.space(8)
+
+          Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: "App icons"
+            color: panel.textColor
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+            font.bold: true
+          }
+
+          Repeater {
+            model: [{ label: "Show", value: true }, { label: "Hide", value: false }]
+
+            Rectangle {
+              id: appsOption
+              required property var modelData
+              readonly property bool selected: panel.host && panel.host.showApps === modelData.value
+
+              anchors.verticalCenter: parent.verticalCenter
+              width: appsLabel.implicitWidth + Style.space(16)
+              height: appsLabel.implicitHeight + Style.space(8)
+              radius: Style.space(4)
+              color: selected ? Util.alpha(panel.textColor, 0.16)
+                : (appsArea.containsMouse ? Util.alpha(panel.textColor, 0.08) : "transparent")
+              border.width: 1
+              border.color: selected ? panel.textColor : Util.alpha(panel.textColor, 0.12)
+
+              Text {
+                id: appsLabel
+                anchors.centerIn: parent
+                text: appsOption.modelData.label
+                color: panel.textColor
+                font.family: Style.font.family
+                font.pixelSize: Style.font.bodySmall
+              }
+
+              MouseArea {
+                id: appsArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: panel.host.setShowApps(appsOption.modelData.value)
+              }
+            }
+          }
+        }
+
         Repeater {
           model: panel.host ? panel.host.screenRows() : []
 

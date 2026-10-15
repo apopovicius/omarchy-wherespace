@@ -67,14 +67,16 @@ See how wherespace has changed from release to release in
 
 ## Settings
 
-Right-click the workspaces to choose each screen's **shape** and **color**
-(from your theme's palette). Choices are saved per screen model, so they
+Right-click the workspaces to turn **app icons** on or off (off keeps only
+the screens and their numbers; the hover card still lists every window), and
+to choose each screen's **shape** and **color** (from your theme's palette). Choices are saved per screen model, so they
 survive changing ports, in this widget's entry in
 `~/.config/omarchy/shell.json`:
 
 ```json
 {
   "id": "io.github.apopovicius.wherespace",
+  "showApps": true,
   "screens": {
     "built-in": { "shape": "laptop", "color": "green" },
     "DELL P2725D": { "shape": "monitor", "color": "blue" }

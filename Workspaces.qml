@@ -90,7 +90,18 @@ BarWidget {
   // { "DELL P2725D": { shape, color } }.
   // Saved to this widget's entry in shell.json as "screens".
   property var screenChoices: setting("screens", ({}))
-  onSettingsChanged: screenChoices = setting("screens", ({}))
+  // "showApps" in shell.json: false keeps only the screen outlines and numbers.
+  property bool showApps: setting("showApps", true) !== false
+  onSettingsChanged: {
+    screenChoices = setting("screens", ({}))
+    showApps = setting("showApps", true) !== false
+  }
+
+  function setShowApps(value) {
+    root.showApps = value
+    saveProc.command = ["omarchy", "bar", "set", root.moduleName, "showApps", value ? "true" : "false", "--json"]
+    saveProc.running = true
+  }
 
   // Settings popup state; the open/close/opened shape is what the bar's popup
   // coordinator expects from a panel owner.
@@ -357,6 +368,7 @@ BarWidget {
   // Windows grouped by app, in order of first appearance:
   // { apps: [{ icon, text, name, count }] (at most `limit`), more: <hidden apps> }.
   function appGroups(workspace, limit) {
+    if (!root.showApps) return { apps: [], hidden: [], more: 0 }
     var windows = windowsOn(workspace)
     var groups = []
     var byKey = {}
@@ -385,6 +397,7 @@ BarWidget {
   // Width the widget needs when showing at most `limit` apps per workspace,
   // worked out from the data so it can be decided before anything is drawn.
   function requiredWidth(limit, tightLevel, focusedOnlyLevel) {
+    root.showApps
     var padding = tightLevel ? root.tightPadding : root.normalPadding
     var spacing = tightLevel ? Style.space(1) : Style.space(4)
     var total = 0
