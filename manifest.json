@@ -4,6 +4,7 @@
   "name": "wherespace",
   "version": "1.1.1",
   "author": "Andrei Popovici",
+  "license": "MIT",
   "description": "Replaces the bar's workspace numbers: each workspace is drawn as the screen it lives on (laptop, monitor, …), with the apps open on it. Built for multi-monitor setups.",
   "kinds": [
     "bar-widget"

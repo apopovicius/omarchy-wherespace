@@ -110,6 +110,7 @@ BarWidget {
   readonly property bool opened: settingsOpen
   function open() { settingsOpen = true }
   function close() { settingsOpen = false }
+  function toggle() { settingsOpen ? close() : open() }
   function closeForPopoutSwitch() {
     popoutSwitchClosing = true
     close()
