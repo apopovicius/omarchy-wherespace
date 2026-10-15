@@ -33,7 +33,6 @@ PopupWindow {
   implicitHeight: Math.ceil(bubble.height) + edge * 2
 
   anchor {
-    id: cardAnchor
     window: card.pill ? card.pill.QsWindow.window : null
     adjustment: PopupAdjustment.Slide
     edges: Edges.Top | Edges.Left
@@ -48,8 +47,8 @@ PopupWindow {
       var localX = target.width / 2 - card.implicitWidth / 2
       var localY = bottomBar ? -card.implicitHeight - 6 : target.height + 6
       var point = target.QsWindow.window.contentItem.mapFromItem(target, localX, localY)
-      cardAnchor.rect.x = Math.round(point.x)
-      cardAnchor.rect.y = Math.round(point.y)
+      card.anchor.rect.x = Math.round(point.x)
+      card.anchor.rect.y = Math.round(point.y)
     }
   }
 
