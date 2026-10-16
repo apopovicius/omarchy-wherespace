@@ -99,6 +99,30 @@ if code_only *.qml | grep -nE '"/tmp' >/dev/null; then
   fail "a shared /tmp path is used; keep state in XDG_RUNTIME_DIR"
 fi
 
+step "icons load only from local files and the icon theme"
+# Runs the plugin's real iconSource() against hostile Icon= values.
+command -v node >/dev/null || fail "node is needed for the icon-source test"
+python3 - Workspaces.qml <<'PY' | node
+import re, sys
+src = open(sys.argv[1]).read()
+fn = re.search(r"  function iconSource\(icon\) \{.*?\n  \}", src, re.S)
+if not fn:
+    sys.exit("check: iconSource() not found in Workspaces.qml")
+print("""
+const Util = { fileUrl: p => "file://" + p }
+const Quickshell = { iconPath: name => "image://icon/" + name }
+""" + fn.group(0) + """
+const allowed = { "slack": "image://icon/slack", "/a/b.png": "file:///a/b.png",
+  "file:///a/b.png": "file:///a/b.png", "image://icon/x": "image://icon/x" }
+const refused = ["https://evil.example/x.png", "http://evil/x", "ftp://evil/x",
+  "image://other/x", "data:image/png;base64,AA", "javascript:x", "//evil.example/x.png", "qrc:/x"]
+let bad = []
+for (const [input, expected] of Object.entries(allowed)) if (iconSource(input) !== expected) bad.push(input)
+for (const input of refused) if (iconSource(input) !== "") bad.push(input)
+if (bad.length) { console.error("check: iconSource() mishandles: " + bad.join(", ")); process.exit(1) }
+""")
+PY
+
 # 3 ----------------------------------------------------------------------
 step "README install and remove commands"
 id=$(jq -r .id manifest.json)
