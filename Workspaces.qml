@@ -514,6 +514,7 @@ BarWidget {
     var value = String(icon || "")
     if (value.length === 0) return ""
     if (value.indexOf("file:///") === 0 || value.indexOf("image://icon/") === 0) return value
+    if (value.indexOf("//") === 0) return ""
     if (value.charAt(0) === "/") return Util.fileUrl(value)
     if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)) return ""
     return Quickshell.iconPath(value, true)
