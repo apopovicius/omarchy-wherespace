@@ -1,2 +1,12 @@
 PROGRESS.md
 submission.md
+
+# AI assistant files
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.cursor/
+.aider*
+docs/specs/
