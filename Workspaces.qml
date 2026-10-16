@@ -99,8 +99,7 @@ BarWidget {
 
   function setShowApps(value) {
     root.showApps = value
-    saveProc.command = ["omarchy", "bar", "set", root.moduleName, "showApps", value ? "true" : "false", "--json"]
-    saveProc.running = true
+    runCommand(["omarchy", "bar", "set", root.moduleName, "showApps", value ? "true" : "false", "--json"])
   }
 
   // Settings popup state; the open/close/opened shape is what the bar's popup
@@ -280,14 +279,27 @@ BarWidget {
   // Update at once for a responsive popup, then persist to shell.json.
   function saveScreenChoices(next) {
     root.screenChoices = next
-    saveProc.command = ["omarchy", "bar", "set", root.moduleName, "screens", JSON.stringify(next), "--json"]
-    saveProc.running = true
+    runCommand(["omarchy", "bar", "set", root.moduleName, "screens", JSON.stringify(next), "--json"])
   }
 
   function workspaceById(id) {
     var values = Hyprland.workspaces.values
     for (var i = 0; i < values.length; i++) if (values[i].id === id) return values[i]
     return null
+  }
+
+  // Only { "<hex address>": <number> } entries are kept from the saved file.
+  function parseOpenedAt(raw) {
+    var clean = {}
+    try {
+      var data = JSON.parse(raw)
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        for (var key in data) {
+          if (/^[0-9a-fA-F]{1,16}$/.test(key) && typeof data[key] === "number" && isFinite(data[key])) clean[key] = data[key]
+        }
+      }
+    } catch (e) {}
+    return clean
   }
 
   function openedTime(toplevel) {
@@ -490,11 +502,14 @@ BarWidget {
     }
   }
 
+  // Icons come from desktop entries; only local files and the icon theme are
+  // allowed, never a network URL or another image provider.
   function iconSource(icon) {
     var value = String(icon || "")
     if (value.length === 0) return ""
-    if (value.indexOf("file://") === 0 || value.indexOf("image://") === 0) return value
+    if (value.indexOf("file:///") === 0 || value.indexOf("image://icon/") === 0) return value
     if (value.charAt(0) === "/") return Util.fileUrl(value)
+    if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)) return ""
     return Quickshell.iconPath(value, true)
   }
 
@@ -547,14 +562,19 @@ BarWidget {
 
   // Clicking an app icon targets the app, not one window of it: focus its
   // first window on that workspace (in on-screen order).
+  // Values are checked against strict formats before they reach Hyprland's
+  // Lua dispatcher, and the command runs without a shell.
   function focusApp(app) {
-    if (!root.bar || !app || !app.addresses || app.addresses.length === 0) return
-    root.bar.run("hyprctl dispatch " + Util.shellQuote("hl.dsp.focus({ window = \"address:" + app.addresses[0] + "\" })"))
+    if (!app || !app.addresses || app.addresses.length === 0) return
+    var address = String(app.addresses[0])
+    if (!/^0x[0-9a-fA-F]{1,16}$/.test(address)) return
+    runCommand(["hyprctl", "dispatch", "hl.dsp.focus({ window = \"address:" + address + "\" })"])
   }
 
   function focusWorkspace(id) {
-    if (!root.bar) return
-    root.bar.run("hyprctl dispatch " + Util.shellQuote("hl.dsp.focus({ workspace = \"" + id + "\" })"))
+    var workspace = Number(id)
+    if (!Number.isInteger(workspace) || workspace < 1 || workspace > 9999) return
+    runCommand(["hyprctl", "dispatch", "hl.dsp.focus({ workspace = \"" + workspace + "\" })"])
   }
 
   function refreshClients() {
@@ -587,15 +607,32 @@ BarWidget {
     root.firstClientsPass = false
     if (!changed) return
     root.openedAt = next
-    openedAtFile.setText(JSON.stringify(next))
+    if (root.runtimeDir !== "") openedAtFile.setText(JSON.stringify(next))
   }
 
   function refreshMonitors() {
     if (!monitorsProc.running) monitorsProc.running = true
   }
 
+  // Commands run one at a time from a queue, as argument lists (never through
+  // a shell), so quick successive settings changes are all saved in order.
+  property var commandQueue: []
+
+  function runCommand(argv) {
+    root.commandQueue = root.commandQueue.concat([argv])
+    if (!commandProc.running) root.runNextCommand()
+  }
+
+  function runNextCommand() {
+    if (root.commandQueue.length === 0) return
+    commandProc.command = root.commandQueue[0]
+    root.commandQueue = root.commandQueue.slice(1)
+    commandProc.running = true
+  }
+
   Process {
-    id: saveProc
+    id: commandProc
+    onExited: Qt.callLater(root.runNextCommand)
   }
 
   Process {
@@ -606,7 +643,11 @@ BarWidget {
         var map = {}
         try {
           var list = JSON.parse(text)
-          for (var i = 0; i < list.length; i++) map[list[i].name] = { model: list[i].model, transform: list[i].transform }
+          for (var i = 0; i < (Array.isArray(list) ? list.length : 0); i++) {
+            var m = list[i]
+            if (!m || typeof m.name !== "string") continue
+            map[m.name] = { model: typeof m.model === "string" ? m.model.slice(0, 64) : "", transform: Number(m.transform) || 0 }
+          }
         } catch (e) {}
         root.monitorInfo = map
       }
@@ -677,12 +718,16 @@ BarWidget {
     onTriggered: root.refreshClients()
   }
 
+  // Saved only in the per-user runtime dir; without one, open times stay in
+  // memory (never a shared location like /tmp).
+  readonly property string runtimeDir: Quickshell.env("XDG_RUNTIME_DIR") || ""
+
   FileView {
     id: openedAtFile
-    path: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/omarchy-wherespace-opened.json"
+    path: root.runtimeDir !== "" ? root.runtimeDir + "/omarchy-wherespace-opened.json" : ""
     printErrors: false
     onLoaded: {
-      try { root.openedAt = JSON.parse(text()) || {} } catch (e) { root.openedAt = {} }
+      root.openedAt = root.parseOpenedAt(text())
       root.openedAtLoaded = true
       root.refreshClients()
     }

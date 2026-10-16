@@ -88,6 +88,17 @@ if bad:
     sys.exit("check: Text without textFormat: Text.PlainText at " + ", ".join(bad))
 PY
 
+step "no shell commands, no shared temp paths"
+# Commands run as argument lists through the widget's queue, never as shell
+# strings; state lives in $XDG_RUNTIME_DIR, never in a shared /tmp.
+code_only() { sed -E 's#//.*$##' "$@"; }
+if code_only *.qml | grep -nE '\bbar\.run\(|"(bash|sh)", *"-c", *[^ `]' >/dev/null; then
+  fail "a command is run through a shell string; use runCommand([...])"
+fi
+if code_only *.qml | grep -nE '"/tmp' >/dev/null; then
+  fail "a shared /tmp path is used; keep state in XDG_RUNTIME_DIR"
+fi
+
 # 3 ----------------------------------------------------------------------
 step "README install and remove commands"
 id=$(jq -r .id manifest.json)

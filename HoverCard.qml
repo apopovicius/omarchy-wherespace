@@ -189,6 +189,8 @@ PopupWindow {
 
               Text {
                 textFormat: Text.PlainText
+                width: Math.min(implicitWidth, card.titleWidth)
+                elide: Text.ElideRight
                 text: windowRow.modelData.name
                 color: card.textColor
                 font.family: Style.font.family
