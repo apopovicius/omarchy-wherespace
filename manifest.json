@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.apopovicius.wherespace",
   "name": "wherespace",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "author": "Andrei Popovici",
   "license": "MIT",
   "description": "Replaces the bar's workspace numbers: each workspace is drawn as the screen it lives on (laptop, monitor, …), with the apps open on it. Built for multi-monitor setups.",
