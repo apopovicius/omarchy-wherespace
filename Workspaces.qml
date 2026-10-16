@@ -157,6 +157,12 @@ BarWidget {
   // Bumped on any Hyprland event so the groups re-evaluate.
   property int revision: 0
 
+  // Names from other programs (window classes, process names): no control
+  // characters, bounded length.
+  function cleanName(value) {
+    return String(value || "").replace(/[\u0000-\u001f\u007f]/g, "").slice(0, 128)
+  }
+
   function stripAddress(address) {
     return String(address || "").replace(/^0x/, "")
   }
@@ -556,7 +562,11 @@ BarWidget {
         ? { icon: iconSource(entry.icon), text: "", name: entry.name || cls }
         : { icon: "", text: cls ? cls.charAt(0).toUpperCase() : "", name: cls }
     }
-    if (cls) root.iconCache[key] = label
+    if (cls) {
+      // Window classes are chosen by apps, so keep the cache bounded.
+      if (Object.keys(root.iconCache).length >= 256) root.iconCache = ({})
+      root.iconCache[key] = label
+    }
     return label
   }
 
@@ -688,7 +698,7 @@ BarWidget {
           var parts = lines[i].split("\t")
           if (parts.length < 2 || !parts[0]) continue
           map[root.stripAddress(parts[0])] = {
-            cls: parts[1], inner: parts[2] || "", age: Number(parts[3] || 0),
+            cls: root.cleanName(parts[1]), inner: root.cleanName(parts[2]), age: Number(parts[3] || 0),
             x: Number(parts[4] || 0), y: Number(parts[5] || 0),
             w: Number(parts[6] || 0), h: Number(parts[7] || 0)
           }
@@ -709,9 +719,17 @@ BarWidget {
   }
 
   // Programs started inside an already-open terminal don't always change its
-  // title, so poll as a fallback.
+  // title, and some layout changes aren't announced, so poll as a fallback:
+  // every 5 s while a terminal is open, every 15 s otherwise.
+  readonly property bool hasTerminals: {
+    for (var address in root.clientInfo) {
+      if (root.terminalClasses.indexOf(root.clientInfo[address].cls) !== -1) return true
+    }
+    return false
+  }
+
   Timer {
-    interval: 5000
+    interval: root.hasTerminals ? 5000 : 15000
     running: true
     repeat: true
     triggeredOnStart: true
@@ -764,6 +782,15 @@ BarWidget {
   }
 
   Component.onCompleted: refreshMonitors()
+
+  // Installed apps changed: forget cached icons so new apps get theirs.
+  Connections {
+    target: DesktopEntries.applications
+    function onValuesChanged() {
+      root.iconCache = ({})
+      root.revision++
+    }
+  }
 
   FontMetrics {
     id: countMetrics
