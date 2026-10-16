@@ -104,6 +104,9 @@ Item {
   }
 
   Text {
+    // Plain text only: titles and names come from other apps and must
+    // never be parsed as rich text (an <img> would make the shell fetch it).
+    textFormat: Text.PlainText
     id: labelText
     visible: shape.label !== ""
     // Snap to physical pixels: with fractional scaling a whole logical pixel

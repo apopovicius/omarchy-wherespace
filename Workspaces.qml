@@ -939,6 +939,9 @@ BarWidget {
                 clip: true
 
                 Text {
+                  // Plain text only: titles and names come from other apps and must
+                  // never be parsed as rich text (an <img> would make the shell fetch it).
+                  textFormat: Text.PlainText
                   id: moreText
                   text: "+" + pill.apps.more
                   color: pill.tint

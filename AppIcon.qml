@@ -71,6 +71,9 @@ Item {
   }
 
   Text {
+    // Plain text only: titles and names come from other apps and must
+    // never be parsed as rich text (an <img> would make the shell fetch it).
+    textFormat: Text.PlainText
     id: appGlyph
     visible: appSlot.app.icon === "" && (appSlot.app.glyph || "") !== ""
     x: Math.round((appSlot.iconWidth - width) / 2)
@@ -85,6 +88,7 @@ Item {
   }
 
   Text {
+    textFormat: Text.PlainText
     id: appText
     visible: appSlot.app.icon === "" && !appGlyph.visible
     anchors.verticalCenter: parent.verticalCenter
@@ -97,6 +101,7 @@ Item {
 
   // Window count as plain text ("×5") beside the icon, low like a subscript.
   Text {
+    textFormat: Text.PlainText
     visible: appSlot.app.count >= 2
     x: appSlot.iconWidth + appSlot.host.bubbleGap
     y: parent.height - height + Math.round(appSlot.host.line * 2)

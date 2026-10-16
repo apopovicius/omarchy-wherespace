@@ -90,6 +90,9 @@ PopupWindow {
           anchors.verticalCenter: parent.verticalCenter
 
           Text {
+            // Plain text only: titles and names come from other apps and must
+            // never be parsed as rich text (an <img> would make the shell fetch it).
+            textFormat: Text.PlainText
             text: card.pill ? "Workspace " + (card.pill.modelData === 10 ? "0" : card.pill.modelData) : ""
             color: card.textColor
             font.family: Style.font.family
@@ -98,6 +101,7 @@ PopupWindow {
           }
 
           Text {
+            textFormat: Text.PlainText
             text: card.screenInfo ? card.screenInfo.label : ""
             color: card.mutedColor
             font.family: Style.font.family
@@ -113,6 +117,7 @@ PopupWindow {
       }
 
       Text {
+        textFormat: Text.PlainText
         visible: card.windows.length === 0
         text: "No windows"
         color: card.mutedColor
@@ -150,6 +155,7 @@ PopupWindow {
               }
 
               Text {
+                textFormat: Text.PlainText
                 id: windowGlyph
                 visible: !windowIcon.visible && (windowRow.modelData.glyph || "") !== ""
                 anchors.centerIn: parent
@@ -167,6 +173,7 @@ PopupWindow {
                 color: Util.alpha(card.screenInfo ? card.screenInfo.color : card.textColor, 0.25)
 
                 Text {
+                  textFormat: Text.PlainText
                   anchors.centerIn: parent
                   text: String(windowRow.modelData.name || "?").charAt(0).toUpperCase()
                   color: card.textColor
@@ -181,6 +188,7 @@ PopupWindow {
               anchors.verticalCenter: parent.verticalCenter
 
               Text {
+                textFormat: Text.PlainText
                 text: windowRow.modelData.name
                 color: card.textColor
                 font.family: Style.font.family
@@ -188,6 +196,7 @@ PopupWindow {
               }
 
               Text {
+                textFormat: Text.PlainText
                 visible: text !== "" && text !== windowRow.modelData.name
                 width: Math.min(implicitWidth, card.titleWidth)
                 elide: Text.ElideRight

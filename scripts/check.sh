@@ -4,7 +4,8 @@
 #
 #   1. manifest + marketplace rules (scripts/validate.sh)
 #   2. QML lint: syntax errors, duplicate bindings and similar fail the build
-#   3. README install/remove commands match the manifest id and this repo
+#   3. README install/remove commands match the manifest id and this repo,
+#      and every Text renders plain text (untrusted titles, names)
 #   4. install simulation: a fresh clone, like `omarchy plugin add`, validates
 #
 # Usage: scripts/check.sh   (QMLLINT=/path/to/qmllint to pick a Qt 6 qmllint)
@@ -61,6 +62,31 @@ done
 for file in *.qml; do
   lint "$file" || fail "QML lint failed in $file"
 done
+
+step "untrusted text renders as plain text"
+# Window titles, app names and monitor names come from other programs. A Text
+# left in the default AutoText format parses them as rich text, so a web page
+# title with <img src=...> would make the shell fetch that URL. Every Text
+# must declare textFormat: Text.PlainText.
+python3 - *.qml <<'PY'
+import re, sys
+bad = []
+for path in sys.argv[1:]:
+    lines = open(path).read().split("\n")
+    for i, line in enumerate(lines):
+        if re.match(r"\s*Text\s*\{\s*$", line):
+            depth, body = 0, []
+            for j in range(i, len(lines)):
+                depth += lines[j].count("{") - lines[j].count("}")
+                body.append(lines[j])
+                if depth == 0:
+                    break
+            own = [b for b in body[1:] if re.match(r"\s*textFormat\s*:\s*Text\.PlainText\b", b)]
+            if not own:
+                bad.append(f"{path}:{i + 1}")
+if bad:
+    sys.exit("check: Text without textFormat: Text.PlainText at " + ", ".join(bad))
+PY
 
 # 3 ----------------------------------------------------------------------
 step "README install and remove commands"

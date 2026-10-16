@@ -44,6 +44,9 @@ KeyboardPanel {
           spacing: Style.space(2)
 
           Text {
+            // Plain text only: titles and names come from other apps and must
+            // never be parsed as rich text (an <img> would make the shell fetch it).
+            textFormat: Text.PlainText
             text: "Workspace screens"
             color: panel.textColor
             font.family: Style.font.family
@@ -52,6 +55,7 @@ KeyboardPanel {
           }
 
           Text {
+            textFormat: Text.PlainText
             width: parent.width
             wrapMode: Text.WordWrap
             text: "Pick how each screen is drawn in the bar."
@@ -66,6 +70,7 @@ KeyboardPanel {
           spacing: Style.space(8)
 
           Text {
+            textFormat: Text.PlainText
             anchors.verticalCenter: parent.verticalCenter
             text: "App icons"
             color: panel.textColor
@@ -92,6 +97,7 @@ KeyboardPanel {
               border.color: selected ? panel.textColor : Util.alpha(panel.textColor, 0.12)
 
               Text {
+                textFormat: Text.PlainText
                 id: appsLabel
                 anchors.centerIn: parent
                 text: appsOption.modelData.label
@@ -149,6 +155,7 @@ KeyboardPanel {
                 anchors.verticalCenter: parent.verticalCenter
 
                 Text {
+                  textFormat: Text.PlainText
                   text: screenSection.modelData.title
                   color: panel.textColor
                   font.family: Style.font.family
@@ -157,6 +164,7 @@ KeyboardPanel {
                 }
 
                 Text {
+                  textFormat: Text.PlainText
                   text: screenSection.modelData.port
                   color: panel.mutedColor
                   font.family: Style.font.family
@@ -200,6 +208,7 @@ KeyboardPanel {
                     }
 
                     Text {
+                      textFormat: Text.PlainText
                       anchors.verticalCenter: parent.verticalCenter
                       text: shapeOption.modelData.name
                       color: panel.textColor
@@ -269,6 +278,7 @@ KeyboardPanel {
         }
 
         Text {
+          textFormat: Text.PlainText
           text: "Reset to defaults"
           color: resetArea.containsMouse ? panel.textColor : panel.mutedColor
           font.family: Style.font.family
